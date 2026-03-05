@@ -21,7 +21,8 @@ class ClassTypes {
             "isaString": "string",
             "isaNumber": "number",
             "isaBoolean": "boolean",
-            "isaDate": "date",
+            "isaDateObj": "date object",
+            "isaDateFormat": "date string",
             "isaURL": "URL",
             "isaArray": "array",
             "isaObject": "object",
@@ -81,10 +82,86 @@ class ClassTypes {
         );
     }
 
-    isaDate (value) {
+    isaDateObj (value) {
         return this.#check(
-            "isaDate",
+            "isaDateObj",
             (v) => v instanceof Date && !isNaN(v.getTime()),
+            value,
+        );
+    }
+
+    isaDateFormat (format, value) {
+        return this.#check(
+            "isaDateFormat",
+            (v) => {
+                if (typeof v !== "string") return false;
+                const formats = {
+                    "YYYY-MM-DD": {
+                        regex: /^\d{4}-\d{2}-\d{2}$/,
+                        validate: (str) => {
+                            const [year, month, day] = str.split("-")
+                                .map(Number);
+                            const date = new Date(year, month - 1, day);
+                            return date.getFullYear() === year
+                                && date.getMonth() === month - 1
+                                && date.getDate() === day;
+                        },
+                    },
+                    "YYYY-MM-DD HH:mm:ss": {
+                        regex: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+                        validate: (str) => {
+                            const date = new Date(str.replace(" ", "T"));
+                            return !isNaN(date.getTime());
+                        },
+                    },
+                    "YYYY-MM-DDTHH:mm:ss": {
+                        regex: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+                        validate: (str) => {
+                            const date = new Date(str);
+                            return !isNaN(date.getTime());
+                        },
+                    },
+                    "MM/DD/YYYY": {
+                        regex: /^\d{2}\/\d{2}\/\d{4}$/,
+                        validate: (str) => {
+                            const [month, day, year] = str.split("/")
+                                .map(Number);
+                            const date = new Date(year, month - 1, day);
+                            return date.getFullYear() === year
+                                && date.getMonth() === month - 1
+                                && date.getDate() === day;
+                        },
+                    },
+                    "MM-DD-YYYY": {
+                        regex: /^\d{2}-\d{2}-\d{4}$/,
+                        validate: (str) => {
+                            const [month, day, year] = str.split("-")
+                                .map(Number);
+                            const date = new Date(year, month - 1, day);
+                            return date.getFullYear() === year
+                                && date.getMonth() === month - 1
+                                && date.getDate() === day;
+                        },
+                    },
+                    "DD-MM-YYYY": {
+                        regex: /^\d{2}-\d{2}-\d{4}$/,
+                        validate: (str) => {
+                            const [day, month, year] = str.split("-")
+                                .map(Number);
+                            const date = new Date(year, month - 1, day);
+                            return date.getFullYear() === year
+                                && date.getMonth() === month - 1
+                                && date.getDate() === day;
+                        },
+                    },
+                };
+                const formatDef = formats[format];
+                if (!formatDef) {
+                    throw new TypeError(`Unknown date format: ${format}`);
+                }
+                if (!formatDef.regex.test(v)) return false;
+                return formatDef.validate(v);
+            },
             value,
         );
     }

@@ -21,8 +21,12 @@ class TestChild extends ClassTypes {
         return this.isaBoolean(value);
     }
 
-    testDate (value) {
-        return this.isaDate(value);
+    testDateObj (value) {
+        return this.isaDateObj(value);
+    }
+
+    testDateFormat (format, value) {
+        return this.isaDateFormat(format, value);
     }
 
     testURL (value) {
@@ -277,39 +281,101 @@ describe("ClassTypes", () => {
         });
     });
 
-    describe("isaDate", () => {
+    describe("isaDateObj", () => {
         const validDate = new Date();
         const anotherDate = new Date("2024-01-01");
 
         test("returns value for valid dates", () => {
-            expect(instance.testDate(validDate))
+            expect(instance.testDateObj(validDate))
                 .toBe(validDate);
-            expect(instance.testDate(anotherDate))
+            expect(instance.testDateObj(anotherDate))
                 .toBe(anotherDate);
         });
 
         test("throws TypeError for invalid dates", () => {
-            expect(() => instance.testDate(new Date("invalid")))
+            expect(() => instance.testDateObj(new Date("invalid")))
                 .toThrow(TypeError);
         });
 
         test("throws TypeError for strings", () => {
-            expect(() => instance.testDate("2024-01-01"))
+            expect(() => instance.testDateObj("2024-01-01"))
                 .toThrow(TypeError);
         });
 
         test("throws TypeError for numbers", () => {
-            expect(() => instance.testDate(1234567890))
+            expect(() => instance.testDateObj(1234567890))
                 .toThrow(TypeError);
         });
 
         test("throws TypeError for null", () => {
-            expect(() => instance.testDate(null))
+            expect(() => instance.testDateObj(null))
                 .toThrow(TypeError);
         });
 
         test("throws TypeError for undefined", () => {
-            expect(() => instance.testDate(undefined))
+            expect(() => instance.testDateObj(undefined))
+                .toThrow(TypeError);
+        });
+    });
+
+    describe("isaDateFormat", () => {
+        test("returns value for valid YYYY-MM-DD format", () => {
+            expect(instance.testDateFormat("YYYY-MM-DD", "2026-03-05"))
+                .toBe("2026-03-05");
+        });
+
+        test("returns value for valid MM/DD/YYYY format", () => {
+            expect(instance.testDateFormat("MM/DD/YYYY", "03/05/2026"))
+                .toBe("03/05/2026");
+        });
+
+        test("returns value for valid MM-DD-YYYY format", () => {
+            expect(instance.testDateFormat("MM-DD-YYYY", "03-05-2026"))
+                .toBe("03-05-2026");
+        });
+
+        test("returns value for valid DD-MM-YYYY format", () => {
+            expect(instance.testDateFormat("DD-MM-YYYY", "05-03-2026"))
+                .toBe("05-03-2026");
+        });
+
+        test("returns value for valid YYYY-MM-DD HH:mm:ss format", () => {
+            expect(instance.testDateFormat("YYYY-MM-DD HH:mm:ss", "2026-03-05 14:30:00"))
+                .toBe("2026-03-05 14:30:00");
+        });
+
+        test("returns value for valid YYYY-MM-DDTHH:mm:ss format", () => {
+            expect(instance.testDateFormat("YYYY-MM-DDTHH:mm:ss", "2026-03-05T14:30:00"))
+                .toBe("2026-03-05T14:30:00");
+        });
+
+        test("throws TypeError for invalid format name", () => {
+            expect(() => instance.testDateFormat("INVALID", "2026-03-05"))
+                .toThrow(TypeError);
+        });
+
+        test("throws TypeError for wrong pattern", () => {
+            expect(() => instance.testDateFormat("YYYY-MM-DD", "03-05-2026"))
+                .toThrow(TypeError);
+        });
+
+        test("throws TypeError for invalid date", () => {
+            expect(() => instance.testDateFormat("YYYY-MM-DD", "2024-02-30"))
+                .toThrow(TypeError);
+        });
+
+        test("throws TypeError for numbers", () => {
+            expect(() => instance.testDateFormat("YYYY-MM-DD", 20260305))
+                .toThrow(TypeError);
+        });
+
+        test("throws TypeError for null", () => {
+            expect(() => instance.testDateFormat("YYYY-MM-DD", null))
+                .toThrow(TypeError);
+        });
+
+        test("throws TypeError for undefined", () => {
+            expect(() => instance.testDateFormat("YYYY-MM-DD", undefined))
                 .toThrow(TypeError);
         });
     });
@@ -684,7 +750,7 @@ describe("ClassTypes", () => {
                 .toBe(42);
             expect(instance.maybe("isaBoolean", true))
                 .toBe(true);
-            expect(instance.maybe("isaDate", new Date()))
+            expect(instance.maybe("isaDateObj", new Date()))
                 .toBeInstanceOf(Date);
             expect(instance.maybe("isaURL", "https://example.com"))
                 .toBe("https://example.com");

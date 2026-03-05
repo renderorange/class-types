@@ -114,7 +114,8 @@ All type checks return the value if it passes, or throw a `TypeError` if it fail
 - `isaString(value)` - Strings
 - `isaNumber(value)` - Numbers (including negative and floats)
 - `isaBoolean(value)` - Booleans
-- `isaDate(value)` - Valid Date objects
+- `isaDateObj(value)` - Valid Date objects
+- `isaDateFormat(format, value)` - Date strings with specific format ("YYYY-MM-DD", "MM/DD/YYYY", "MM-DD-YYYY", "DD-MM-YYYY", "YYYY-MM-DD HH:mm:ss", "YYYY-MM-DDTHH:mm:ss")
 - `isaURL(value)` - Valid HTTP/HTTPS URLs
 - `isaArray(value)` - Arrays
 - `isaObject(value)` - Plain objects
