@@ -1,6 +1,6 @@
 {
     "name": "@renderorange/class-types",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Base class for runtime type checking in JavaScript",
     "author": "Blaine Motsinger <blaine@renderorange.com>",
     "license": "MIT",
